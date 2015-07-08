@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {
+          packages: ["corechart"]
+        });
+
+        google.setOnLoadCallback(drawChart);
+
+        var data_dokter,options_dokter,chart_dokter,data_pasien,options_pasien,chart_pasien,data_lab,options_lab,chart_lab;
+        var DEF_HEIGHT = 400;
+
+        function drawChart() {
+          var ajaxUrl = "./api";
+          $.ajax({
+            url: ajaxUrl,
+          }).success(function(data) {
+            var jData = $.parseJSON(data);
+            
+            // Dokter
+            data_dokter = google.visualization.arrayToDataTable([
+              ['Status', 'Rate'],
+              ['Success', jData.dokter.success],
+              ['Fail', jData.dokter.fail],
+              ['Other', jData.dokter.other],
+            ]);
+            options_dokter = {
+              title: 'SMS Dokter',
+              is3D: true,
+              width : $('#piechart_dokter').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+            };
+            chart_dokter = new google.visualization.PieChart(document.getElementById('piechart_dokter'));
+            chart_dokter.draw(data_dokter, options_dokter);
+            
+            // Pasien
+            data_pasien = google.visualization.arrayToDataTable([
+              ['Status', 'Rate'],
+              ['Success', jData.pasien.success],
+              ['Fail', jData.pasien.fail],
+              ['Other', jData.pasien.other],
+            ]);
+
+            options_pasien = {
+              title: 'SMS Pasien',
+              is3D: true,
+              width : $('#piechart_pasien').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+            };
+
+            chart_pasien = new google.visualization.PieChart(document.getElementById('piechart_pasien'));
+            chart_pasien.draw(data_pasien, options_pasien);
+            
+            // Lab
+            data_lab = google.visualization.arrayToDataTable([
+              ['Status', 'Rate'],
+              ['Success', jData.lab.success],
+              ['Fail', jData.lab.fail],
+              ['Other', jData.lab.other],
+            ]);
+
+            options_lab = {
+              title: 'SMS Lab',
+              is3D: true,
+              width : $('#piechart_lab').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+            };
+
+            chart_lab = new google.visualization.PieChart(document.getElementById('piechart_lab'));
+            chart_lab.draw(data_lab, options_lab);
+            $(window).on('resize',function(event){
+              drawChartAgain();
+            });
+          });
+        }
+
+        function drawChartAgain(){
+          options_dokter = {
+              title: 'SMS Dokter',
+              is3D: true,
+              width : $('#piechart_dokter').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+          };
+
+          chart_dokter.draw(data_dokter,options_dokter);
+          options_pasien = {
+              title: 'SMS Pasien',
+              is3D: true,
+              width : $('#piechart_pasien').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+          };
+
+          chart_pasien.draw(data_pasien,options_pasien);
+          options_lab = {
+              title: 'SMS Lab',
+              is3D: true,
+              width : $('#piechart_lab').parent()[0].scrollWidth * 0.8,
+              height : DEF_HEIGHT,
+          };
+
+          chart_lab.draw(data_lab,options_lab);
+        }
+    </script>
+  </head>
+  <body>
+    <div id='chart-1' class="col-md-4">
+      <span id="piechart_dokter"></span>
+    </div>
+    <div id='chart-2' class="col-md-4">
+      <span id="piechart_pasien"></span>
+    </div>
+    <div id='chart-3' class="col-md-4">
+      <span id="piechart_lab"></span>
+    </div>
+  </body>
+</html>
